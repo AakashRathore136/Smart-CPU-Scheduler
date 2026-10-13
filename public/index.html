@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<meta name="theme-color" content="#0b1020">
+		<title>SchedulAI — Adaptive CPU Scheduling Lab</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="/styles.css">
+	</head>
+	<body>
+		<div class="glow g1"></div>
+		<div class="glow g2"></div>
+
+		<header class="topbar">
+			<a class="brand" href="#">
+				<span class="logo">S<span>↗</span></span>
+				<span>Schedul<span class="cyan">AI</span><small>ADAPTIVE SCHEDULING LAB</small></span>
+			</a>
+			<div class="topstatus">
+				<i></i>
+				<span id="status">Local simulation ready</span>
+				<button id="settings-open" title="API settings">⚙</button>
+			</div>
+		</header>
+
+		<main class="shell">
+			<section class="hero">
+				<div class="eyebrow">— OPERATING SYSTEMS · BCSE303P</div>
+				<h1>Let the workload<br>choose the <em>scheduler.</em></h1>
+				<p>Model your process workload. Benchmark classic CPU schedulers, then let Gemini inspect the results and recommend the policy that best fits your objective.</p>
+				<div class="steps">
+					<span>01 / MODEL WORKLOAD</span>
+					<span>02 / BENCHMARK POLICIES</span>
+					<span>03 / AI RECOMMENDATION</span>
+				</div>
+			</section>
+
+			<section class="layout">
+				<aside class="panel setup">
+					<div class="panelhead">
+						<div>
+							<small>CONFIGURATION / 01</small>
+							<h2>Workload setup</h2>
+						</div>
+						<b class="num">01</b>
+					</div>
+
+					<p class="muted">Add processes or load a preset. Lower priority values mean higher priority.</p>
+
+					<label>OPTIMIZATION GOAL</label>
+					<select id="objective">
+						<option value="balanced">Balanced performance</option>
+						<option value="waiting">Minimize average waiting time</option>
+						<option value="response">Minimize response time</option>
+						<option value="turnaround">Minimize turnaround time</option>
+						<option value="throughput">Maximize throughput</option>
+					</select>
+
+					<label>ROUND ROBIN TIME QUANTUM</label>
+					<div class="quantum">
+						<input id="quantum" type="number" min="1" value="3">
+						<span>TIME UNITS</span>
+					</div>
+
+					<div class="process-head">
+						<h3>Process table <span id="count">4 PROCESSES</span></h3>
+						<button id="add">＋ Add process</button>
+					</div>
+
+					<div class="tablewrap">
+						<table>
+							<thead>
+								<tr>
+									<th>PROCESS</th>
+									<th>ARRIVAL</th>
+									<th>BURST</th>
+									<th>PRIORITY</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody id="processes"></tbody>
+						</table>
+					</div>
+
+					<div class="presets">
+						<small>QUICK PRESETS</small>
+						<button data-preset="mixed">Mixed</button>
+						<button data-preset="short">Short jobs</button>
+						<button data-preset="cpu">CPU-heavy</button>
+						<button data-preset="staggered">Staggered</button>
+					</div>
+
+					<button id="analyze" class="primary">Analyze workload <b>↗</b></button>
+					<p class="fine">Simulation runs locally. Your API key is read by the server only, never by browser JavaScript.</p>
+				</aside>
+
+				<section class="right">
+					<div class="panel results">
+						<div class="panelhead">
+							<div>
+								<small>BENCHMARK / 02</small>
+								<h2>Scheduler comparison</h2>
+							</div>
+							<span class="badge"><i></i> SIMULATION</span>
+						</div>
+
+						<div id="empty" class="empty">
+							<div class="cpu-orbit">
+								<span>CPU</span>
+								<i></i>
+								<b></b>
+							</div>
+							<h3>Waiting for your workload</h3>
+							<p>Run an analysis to compare FCFS, SJF, Priority and Round Robin on the same process set.</p>
+						</div>
+
+						<div id="results" class="hide">
+							<div class="cards" id="cards"></div>
+							<div class="charthead">
+								<div>
+									<h3>Performance by policy</h3>
+									<small>Lower is better for time metrics</small>
+								</div>
+								<span>● Waiting &nbsp; <b>●</b> Turnaround</span>
+							</div>
+							<div id="chart" class="chart"></div>
+							<div class="tablewrap metrics">
+								<table>
+									<thead>
+										<tr>
+											<th>POLICY</th>
+											<th>AVG WAIT</th>
+											<th>AVG TAT</th>
+											<th>AVG RESPONSE</th>
+											<th>THROUGHPUT</th>
+											<th>SWITCHES</th>
+										</tr>
+									</thead>
+									<tbody id="metricrows"></tbody>
+								</table>
+							</div>
+							<div class="timelinehead">
+								<div>
+									<h3>Execution timeline</h3>
+									<small>Selected policy · simulated CPU allocation</small>
+								</div>
+								<span id="chosen" class="tag">—</span>
+							</div>
+							<div id="gantt" class="gantt"></div>
+							<div id="ticks" class="ticks"></div>
+						</div>
+					</div>
+
+					<div class="panel advisor">
+						<div class="panelhead">
+							<div>
+								<small>INTELLIGENCE / 03</small>
+								<h2>AI recommendation</h2>
+							</div>
+							<span class="ai-badge">✦ GEMINI ANALYST</span>
+						</div>
+
+						<div id="ai-empty" class="ai-empty">
+							<span class="spark">✳</span>
+							<div>
+								<h3>Your scheduling advisor is ready.</h3>
+								<p>After benchmarking, AI will inspect workload characteristics, your goal and measured metrics to recommend a policy.</p>
+							</div>
+						</div>
+
+						<div id="ai-result" class="hide"></div>
+					</div>
+				</section>
+			</section>
+
+			<footer>
+				<span>SchedulAI <b>/</b> OS Scheduling Research Prototype</span>
+				<span>Measured metrics first. AI explanation second.</span>
+			</footer>
+		</main>
+
+		<div id="modal" class="modal hide">
+			<div id="backdrop" class="backdrop"></div>
+			<div class="modalcard">
+				<button id="close" class="close">×</button>
+				<small>CONNECTION</small>
+				<h2>Gemini API settings</h2>
+				<p>Add your key to the server's <code>.env</code> file and restart the app. Never put a private key in frontend code or commit it to GitHub.</p>
+				<div id="connection" class="connection">Checking backend configuration…</div>
+				<div class="env">
+					<b>Environment variables</b>
+					<code>GEMINI_API_KEY=your_key_here</code>
+					<code>GEMINI_MODEL=gemini-2.5-flash</code>
+				</div>
+				<button id="done" class="primary">Done <b>↗</b></button>
+			</div>
+		</div>
+
+		<div id="toast" class="toast"></div>
+		<script src="/app.js"></script>
+	</body>
+</html>
